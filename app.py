@@ -13,13 +13,12 @@ rf_model = joblib.load('rf_churn_model.pkl')
 scaler = joblib.load('scaler.pkl')
 rfm = pd.read_csv('rfm_data.csv')
 forecast = pd.read_csv('sales_forecast.csv')
-data_clean = pd.read_csv('data_clean.csv')  # Optional: full cleaned dataset
 
 # -------------------------
 # Streamlit Page Config
 # -------------------------
 st.set_page_config(page_title="Smart Retail Analytics", layout="wide")
-st.title("Smart Retail Analytics & Prediction System")
+st.title("💼 Smart Retail Analytics & Prediction System")
 
 # -------------------------
 # Sidebar Navigation
@@ -31,26 +30,24 @@ choice = st.sidebar.selectbox("Select Section", menu)
 # Dashboard Section
 # -------------------------
 if choice == "Dashboard":
-    st.header("Business Dashboard")
+    st.header("📊 Business Dashboard")
     
-    total_revenue = data_clean['TotalPrice'].sum()
-    total_customers = data_clean['Customer ID'].nunique()
-    total_transactions = data_clean['Invoice'].nunique()
+    # KPIs from RFM data
+    total_customers = rfm['Customer ID'].nunique() if 'Customer ID' in rfm.columns else rfm.shape[0]
+    total_revenue = rfm['Monetary'].sum()
+    total_transactions = rfm['Frequency'].sum()
     
     col1, col2, col3 = st.columns(3)
     col1.metric("Total Revenue", f"${total_revenue:,.2f}")
     col2.metric("Total Customers", total_customers)
     col3.metric("Total Transactions", total_transactions)
     
-    # Monthly Sales Chart
-    monthly_sales = data_clean.set_index('InvoiceDate')['TotalPrice'].resample('M').sum()
-    st.subheader("Monthly Revenue Trend")
-    st.line_chart(monthly_sales)
+    # Monthly Revenue (approximation using Recency and Monetary)
+    st.subheader("Customer Monetary Distribution")
+    st.bar_chart(rfm['Monetary'].sort_values(ascending=False).head(20))
     
-    # Top Products
-    st.subheader("Top 10 Best-Selling Products")
-    top_products = data_clean.groupby('Description')['Quantity'].sum().sort_values(ascending=False).head(10)
-    st.bar_chart(top_products)
+    st.subheader("Customer Frequency Distribution")
+    st.bar_chart(rfm['Frequency'].sort_values(ascending=False).head(20))
 
 # -------------------------
 # Customer Segmentation
@@ -68,7 +65,7 @@ elif choice == "Customer Segmentation":
 # Churn Prediction Tool
 # -------------------------
 elif choice == "Churn Prediction":
-    st.header("Customer Churn Prediction")
+    st.header("⚠️ Customer Churn Prediction")
     
     st.write("Select customer features:")
     recency = st.number_input("Recency (days since last purchase)", min_value=0, max_value=1000, value=30)
@@ -87,7 +84,7 @@ elif choice == "Churn Prediction":
 # Sales Forecast Section
 # -------------------------
 elif choice == "Sales Forecast":
-    st.header("Sales Forecast")
+    st.header("📈 Sales Forecast")
     
     st.subheader("Next 12 Months Forecast")
     forecast_display = forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(12)
