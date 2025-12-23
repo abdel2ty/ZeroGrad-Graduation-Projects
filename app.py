@@ -18,7 +18,7 @@ forecast = pd.read_csv('sales_forecast.csv')
 # Streamlit Page Config
 # -------------------------
 st.set_page_config(page_title="Smart Retail Analytics", layout="wide")
-st.title("💼 Smart Retail Analytics & Prediction System")
+st.title("Smart Retail Analytics & Prediction System")
 
 # -------------------------
 # Sidebar Navigation
@@ -30,7 +30,7 @@ choice = st.sidebar.selectbox("Select Section", menu)
 # Dashboard Section
 # -------------------------
 if choice == "Dashboard":
-    st.header("📊 Business Dashboard")
+    st.header("Business Dashboard")
     
     # KPIs from RFM data
     total_customers = rfm['Customer ID'].nunique() if 'Customer ID' in rfm.columns else rfm.shape[0]
@@ -53,7 +53,7 @@ if choice == "Dashboard":
 # Customer Segmentation
 # -------------------------
 elif choice == "Customer Segmentation":
-    st.header("👤 Customer Segmentation")
+    st.header("Customer Segmentation")
     
     st.write("RFM Cluster Summary:")
     st.dataframe(rfm.groupby('Cluster').mean())
@@ -65,7 +65,7 @@ elif choice == "Customer Segmentation":
 # Churn Prediction Tool
 # -------------------------
 elif choice == "Churn Prediction":
-    st.header("⚠️ Customer Churn Prediction")
+    st.header("Customer Churn Prediction")
     
     st.write("Select customer features:")
     recency = st.number_input("Recency (days since last purchase)", min_value=0, max_value=1000, value=30)
@@ -84,7 +84,7 @@ elif choice == "Churn Prediction":
 # Sales Forecast Section
 # -------------------------
 elif choice == "Sales Forecast":
-    st.header("📈 Sales Forecast")
+    st.header("Sales Forecast")
     
     st.subheader("Next 12 Months Forecast")
     forecast_display = forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(12)
